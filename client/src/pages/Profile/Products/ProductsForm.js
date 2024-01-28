@@ -4,11 +4,12 @@ import React, { useEffect, useRef } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { SetLoader } from '../../../redux/loadersSlice'
-import { AddProduct } from '../../../apicalls/products'
+import { AddProduct, EditProduct } from '../../../apicalls/products'
 import { getData } from '../Products/index'
 
 
 const additionalthings = [
+    
     {
         label: "Bill Available",
         name: "billAvailable"
@@ -40,17 +41,27 @@ function ProductsForm({
 
     const onFinish = async (values) => {
         try {
-            values.seller = user._id;
-            values.status = "pending";
+            
             dispatch(SetLoader(true));
-            // console.log(values);
-            const response = await AddProduct(values);
-            dispatch(SetLoader(false));
+            let response = null;
+            if(selectedProduct){
+                response = await EditProduct(selectedProduct._id,values);
+            }else{
+                values.seller = user._id;
+                values.status = "pending";
+                response = await AddProduct(values);       //Here I have changed on my own
+            }
+            
+            dispatch(SetLoader(false)); 
+           
             if (response.success) {
                 message.success(response.message);
                 getData();
+                
                 setShowProductForm(false);
-
+            } else {
+                
+                message.error(response.message)
             }
         } catch (error) {
             dispatch(SetLoader(false));
@@ -60,7 +71,7 @@ function ProductsForm({
     const formRef = useRef(null);    // Using ok buuton as submit button
     useEffect(() => {
         if (selectedProduct) {
-            formRef.current.setFieldValue(selectedProduct);
+            formRef.current.setFieldsValue(selectedProduct);
         }
     }, [selectedProduct])
 
@@ -113,7 +124,7 @@ function ProductsForm({
                             </Row>
                             <div className='flex gap-10'>
                                 {additionalthings.map((item) => (
-                                    <Form.Item label={item.label} name={item.name} key={item.name}>
+                                    <Form.Item label={item.label} name={item.name} key={item.name} valuePropName='checked'>
                                         <Input
                                             type='checkbox'
                                             value={item.name}

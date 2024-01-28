@@ -37,4 +37,40 @@ router.get("/get-products", authMiddleware, async (req, res) => {
     }
 });
 
+
+router.put("/edit-product/:id", authMiddleware , async(req,res)=>{
+    try {
+        await Product.findByIdAndUpdate(req.params.id,req.body);
+        console.log("correctdata")
+        res.send({
+            success:true,
+            message:"Product updated successfully",
+        })
+        
+    } catch (error) {
+        res.send({
+            succcess: false,
+            message: error.message,
+        })
+        
+    }
+})
+
+router.delete("/delete-product/:id", authMiddleware , async(req,res)=>{
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.send({
+            success:true,
+            message:"Product deleted successfully",
+        })
+        
+    } catch (error) {
+        res.send({
+            succcess: false,
+            message: error.message,
+        })
+        
+    }
+})
+
 module.exports = router;
