@@ -11,6 +11,10 @@ const port = process.env.PORT || 5000;   //Opening Port
 
 const userRoute = require('./routes/userRoute')   //Where to route
 
+const productRoute = require('./routes/productsRoute'); // Products where to route
+
+app.use('/api/products',productRoute);
+
 app.use('/api/users', userRoute);    //Routing
 
 app.listen(port, ()=>console.log(`NodeJs/Express server started on port ${port}`));
