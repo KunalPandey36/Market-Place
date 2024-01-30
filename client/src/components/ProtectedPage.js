@@ -44,12 +44,19 @@ function ProtectedPage({ children }) {
             <div>
                 {/*Header*/}
                 <div className='flex justify-between items-center bg-primary p-5'>
-                    <h1 className='text-2xl text-white'>
+                    <h1 className='text-2xl text-white cursor-pointer' onClick={() => navigate("/")}>
                         Market Place
                     </h1>
                     <div className='bg-white py-2 px-5 rounded flex gap-1 item-center'>
                         <i className="ri-shield-user-fill"></i>
-                        <span className='underline cursor-pointer uppercase' onClick={()=> navigate("/profile")}>
+                        <span className='underline cursor-pointer uppercase' onClick={() => {
+                            if (user.role === 'user') {
+                                navigate("/profile")
+                            } else {
+                                navigate("/admin")
+                            }
+
+                        }}>
                             {user.name}
 
                         </span>

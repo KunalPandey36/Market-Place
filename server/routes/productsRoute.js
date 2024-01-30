@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Product = require("../models/productModel");
+
 const authMiddleware = require("../middleware/authMiddleware");
 
 const multer = require("multer");
@@ -25,14 +26,21 @@ router.post("/add-product", authMiddleware, async (req, res) => {
 
 //get all products
 
-router.get("/get-products", authMiddleware, async (req, res) => {
+router.post("/get-products", authMiddleware, async (req, res) => {
     try {
-        const products = await Product.find();
+        const { seller, categories = [], age = [] } = req.body
+        let filters = {}
+        if (seller) {
+            filters.seller = seller
+        }
+        const products = await Product.find(filters).populate('seller').sort({ createdAt: -1 });
+
         res.send({
             success: true,
             products
         })
     } catch (error) {
+
         res.send({
             succcess: false,
             message: error.message,
@@ -44,7 +52,7 @@ router.get("/get-products", authMiddleware, async (req, res) => {
 router.put("/edit-product/:id", authMiddleware, async (req, res) => {
     try {
         await Product.findByIdAndUpdate(req.params.id, req.body);
-        
+
         res.send({
             success: true,
             message: "Product updated successfully",
@@ -91,7 +99,7 @@ router.post("/upload-image-to-product", authMiddleware, multer({ storage: storag
 
 
 
-        const result = await cloudinary.uploader.upload(req.file.path , {folder:"MarketPlace"});
+        const result = await cloudinary.uploader.upload(req.file.path, { folder: "MarketPlace" });
 
         const productId = req.body.productId;
 
@@ -102,7 +110,7 @@ router.post("/upload-image-to-product", authMiddleware, multer({ storage: storag
         res.send({
             success: true,
             message: "Image uploaded successfully",
-            data : result.secure_url,
+            data: result.secure_url,
         })
     } catch (error) {
         console.log(error)
@@ -112,5 +120,29 @@ router.post("/upload-image-to-product", authMiddleware, multer({ storage: storag
         })
     }
 })
+
+
+// update product status
+
+router.put("/update-product-status/:id", authMiddleware, async (req, res) => {
+    try {
+
+        const { status } = req.body;
+        await Product.findByIdAndUpdate(req.params.id, { status });
+        res.send({
+            success: true,
+            message: "Product status updated successfully"
+        })
+
+    } catch (error) {
+
+        res.send({
+            success: false,
+            message: error.message,
+        })
+    }
+})
+
+
 
 module.exports = router;
