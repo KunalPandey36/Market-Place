@@ -2,7 +2,7 @@ import { Button, Upload, message } from 'antd'
 import React from 'react'
 import { useDispatch } from 'react-redux';
 import { SetLoader } from '../../../redux/loadersSlice';
-import { UploadProductImage } from '../../../apicalls/products';
+import { EditProduct, UploadProductImage } from '../../../apicalls/products';
 
 function Images({selectedProduct,
     getData,
@@ -39,8 +39,36 @@ function Images({selectedProduct,
             message.error(error.message)
         }
     };
+    const deleteImage = async(image)=>{
+        try {
+            dispatch(SetLoader(true))
+            const updatedImageArray = images.filter((img)=> img !== image);
+            const updatedProduct = {...selectedProduct,images: updatedImageArray}
+            const response = await EditProduct(selectedProduct._id,updatedProduct);
+            if(response.success){
+                message.success(response.message)
+                setImages(updatedImageArray);
+                getData();
+            }else{
+                throw new Error(response.message)
+            }
+        } catch (error) {
+            dispatch(SetLoader(false))
+            message.error(error.message)
+        }
+    }
     return (
         <div>
+            <div className='flex gap-5 mb-5'>
+            {
+                    images.map((image)=>{
+                    return <div className='flex gap-2 border border-solid border-gray-500 rounded p-3 items-end'>
+                        <img className='h-20 w-20 object-cover' src={image} alt='' />
+                        <i className="ri-delete-bin-fill" onClick={()=>{deleteImage(image)}}></i>
+                    </div>
+                    })
+            }
+            </div>
             <Upload
                 listType='picture'
                 beforeUpload={() => false}
@@ -50,18 +78,7 @@ function Images({selectedProduct,
                 }}
             showUploadList = {showPreview}
             >
-            <div className='flex gap-5 mb-5'>
-            {
-                    images.map((image)=>{
-                    return <div className='flex gap-2 border border-solid border-gray-500 rounded p-3 items-end'>
-                        <img className='h-20 w-20 object-cover' src={image} alt='' />
-                        <i className="ri-delete-bin-fill" onClick={()=>{
-                        
-                    }}></i>
-                    </div>
-                    })
-            }
-            </div>
+            
             
                 <Button type='dashed'>
                     Upload Image

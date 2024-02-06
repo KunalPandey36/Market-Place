@@ -10,7 +10,7 @@ import Images from './Images'
 
 
 const additionalthings = [
-    
+
     {
         label: "Bill Available",
         name: "billAvailable"
@@ -37,32 +37,32 @@ const rules = [{
 function ProductsForm({
     showProductForm,
     setShowProductForm, selectedProduct, getData }) {
-    const [selectedTab = "1",setSelectedTab]  = React.useState("1");
+    const [selectedTab = "1", setSelectedTab] = React.useState("1");
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.users)
 
     const onFinish = async (values) => {
         try {
-            
+
             dispatch(SetLoader(true));
             let response = null;
-            if(selectedProduct){
-                response = await EditProduct(selectedProduct._id,values);
-            }else{
+            if (selectedProduct) {
+                response = await EditProduct(selectedProduct._id, values);
+            } else {
                 values.seller = user._id;
                 values.status = "pending";
                 response = await AddProduct(values);       //Here I have changed on my own
             }
-            
-            dispatch(SetLoader(false)); 
-           
+
+            dispatch(SetLoader(false));
+
             if (response.success) {
                 message.success(response.message);
                 getData();
-                
+
                 setShowProductForm(false);
             } else {
-                
+
                 message.error(response.message)
             }
         } catch (error) {
@@ -88,13 +88,13 @@ function ProductsForm({
             onOk={() => {
                 formRef.current.submit();
             }}
-            {...(selectedTab==="2" && {footer: false})}   //To remove save option from image tab
-            >
+            {...(selectedTab === "2" && { footer: false })}   //To remove save option from image tab
+        >
             <div>
                 <h1 className="text-primary text-2xl text-center font-semibold uppercase">
                     {selectedProduct ? "Edit Product" : "Add Product"}
                 </h1>
-                <Tabs defaultActiveKey='1' activeKey={selectedTab} onChange={(key)=> setSelectedTab(key)}>
+                <Tabs defaultActiveKey='1' activeKey={selectedTab} onChange={(key) => setSelectedTab(key)}>
                     <Tabs.TabPane tab="General" key="1">
                         <Form layout='vertical' ref={formRef} onFinish={onFinish}>
                             <Form.Item label="Name" name='name' rules={rules}>
@@ -143,6 +143,25 @@ function ProductsForm({
                                     </Form.Item>
                                 ))}
                             </div>
+
+                            <Form.Item
+                                label="Show Bids on Product Page"
+                                name="showBidsOnProductPage"
+                                key="showBidsOnProductPage"
+                                valuePropName='checked'>
+                                <Input
+                                    type='checkbox'
+                                    onChange={(e) => {
+
+                                        formRef.current.setFieldsValue({
+                                            showBidsOnProductPage: e.target.checked,
+                                        });
+                                    }}
+                                    checked={formRef.current?.getFieldValue("showBidsOnProductPage")}
+                                    style={{width: 50, marginLeft:20}}
+                                ></Input>
+                            </Form.Item>
+
                         </Form>
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="Images" key="2" disabled={!selectedProduct}>

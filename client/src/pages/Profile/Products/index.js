@@ -1,12 +1,15 @@
 import { Button, Table, message } from 'antd'
 import React, { useEffect } from 'react'
 import ProductsForm from './ProductsForm';
+import Bids from './Bids';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetLoader } from '../../../redux/loadersSlice';
 import { DeleteProduct, GetProducts } from '../../../apicalls/products';
 import moment from "moment";
 
 function Products() {
+    const [showBids,setShowBids] = React.useState(false);
+    
     const [selectedProduct, setSelectedProduct] = React.useState(null);
     const [products, setProducts] = React.useState([]);
     const [showProductForm, setShowProductForm] = React.useState(false);
@@ -22,7 +25,7 @@ function Products() {
             dispatch(SetLoader(false));
             if (response.success) {
 
-                setProducts(response.products);
+                setProducts(response.data);
             }
 
         } catch (error) {
@@ -84,7 +87,7 @@ function Products() {
             title: "Action",
             dataIndex: "action",
             render: (text, record) => {
-                return <div className='flex gap-5'>
+                return (<div className='flex gap-5 item-center'>
                     <i className="ri-delete-bin-fill" onClick={() => {
                         deleteProduct(record._id);
                     }}></i>
@@ -93,7 +96,12 @@ function Products() {
 
                         setShowProductForm(true);
                     }}></i>
+                    <span className='underline cursor-pointer' onClick={()=>{
+                        setSelectedProduct(record);
+                        setShowBids(true);
+                    }}>Show Bids</span>
                 </div>
+                )
             }
         }
     ]
@@ -125,6 +133,16 @@ function Products() {
                     getData={getData}
                 />
 
+            )}
+
+            { showBids && (
+                <Bids 
+                showBidsModal = {showBids}
+                setShowBidsModal = {setShowBids}
+                selectedProduct = {selectedProduct}
+                >
+
+                </Bids>
             )}
 
         </div>

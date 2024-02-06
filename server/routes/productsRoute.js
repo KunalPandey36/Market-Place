@@ -28,16 +28,32 @@ router.post("/add-product", authMiddleware, async (req, res) => {
 
 router.post("/get-products", authMiddleware, async (req, res) => {
     try {
-        const { seller, categories = [], age = [] } = req.body
+        const { seller, category = [], age = [], status } = req.body
         let filters = {}
         if (seller) {
-            filters.seller = seller
+            filters.seller = seller;
         }
+        if(status){
+            filters.status = status;
+        }
+
+        if(category.length>0){
+            filters.category = { $in : category}
+        }
+
+        if(age.length>0){
+            age.forEach(element => {
+                const fromAge = element.split("-")[0];
+                const toAge = element.split("-")[1];
+                filters.age = {$gte: fromAge , $lte: toAge};
+            });
+        }
+
         const products = await Product.find(filters).populate('seller').sort({ createdAt: -1 });
 
         res.send({
             success: true,
-            products
+            data :products
         })
     } catch (error) {
 
@@ -66,6 +82,24 @@ router.put("/edit-product/:id", authMiddleware, async (req, res) => {
 
     }
 })
+
+router.get("/get-product-by-id/:id", authMiddleware, async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate("seller");
+        res.send({
+            success: true,
+            data:product,
+        })
+
+    } catch (error) {
+        res.send({
+            succcess: false,
+            message: error.message,
+        })
+
+    }
+})
+
 
 router.delete("/delete-product/:id", authMiddleware, async (req, res) => {
     try {

@@ -13,6 +13,10 @@ const userRoute = require('./routes/userRoute')   //Where to route
 
 const productRoute = require('./routes/productsRoute'); // Products where to route
 
+const bidsRoute = require('./routes/bidsroute');
+
+app.use('/api/bids',bidsRoute)
+
 app.use('/api/products',productRoute);
 
 app.use('/api/users', userRoute);    //Routing

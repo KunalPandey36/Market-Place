@@ -36,6 +36,17 @@ export const EditProduct = async (id, payload) => {
 
 
 }
+
+export const GetProductById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/api/products/get-product-by-id/${id}`);
+        return response.data;
+    } catch (error) {
+        return error.message;
+    }
+}
+
+
 export const DeleteProduct = async (id) => {
 
     try {
@@ -69,6 +80,24 @@ export const UpdateProductStatus = async (id, status) => {
         return response.data;
     } catch (error) {
         
+        return error.message;
+    }
+}
+
+export const PlaceNewBid = async(payload) =>{
+    try {
+        const response = await axiosInstance.post("/api/bids/place-new-bid", payload);
+        return response.data;
+    } catch (error) {
+        return error.message
+    }
+}
+
+export const GetAllBids = async (filters) => {
+    try {
+        const response = await axiosInstance.post("/api/bids/get-all-bids", filters);
+        return response.data;
+    } catch (error) {
         return error.message;
     }
 }

@@ -36,7 +36,7 @@ function Products() {
             dispatch(SetLoader(false));
             if (response.success) {
 
-                setProducts(response.products);
+                setProducts(response.data);
             }
 
         } catch (error) {
