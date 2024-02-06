@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Product = require("../models/productModel");
-
+const User = require("../models/usermodel")
+const Notification = require("../models/notificationModel")
 const authMiddleware = require("../middleware/authMiddleware");
 
 const multer = require("multer");
@@ -12,6 +13,20 @@ router.post("/add-product", authMiddleware, async (req, res) => {
     try {
         const newProduct = new Product(req.body);
         await newProduct.save();
+
+        //send notification to admin
+        const admins = await User.find({ role: "admin" })
+        admins.forEach(async (admin) => {
+            const newNotification = new Notification({
+                user: admin._id,
+                message: `New Product Added by ${req.user.name}`,
+                title: "New Product",
+                onClick: `/admin`,
+                read: false
+            })
+        })
+        await newNotification.save();
+
         res.send({
             success: true,
             message: "Product added Successfully"
@@ -28,32 +43,37 @@ router.post("/add-product", authMiddleware, async (req, res) => {
 
 router.post("/get-products", authMiddleware, async (req, res) => {
     try {
-        const { seller, category = [], age = [], status } = req.body
+        const { seller, category = [], age = [], status, search } = req.body
         let filters = {}
         if (seller) {
             filters.seller = seller;
         }
-        if(status){
+        if (status) {
             filters.status = status;
         }
 
-        if(category.length>0){
-            filters.category = { $in : category}
+
+        if (category.length > 0) {
+            filters.category = { $in: category }
         }
 
-        if(age.length>0){
+        if (age.length > 0) {
             age.forEach(element => {
                 const fromAge = element.split("-")[0];
                 const toAge = element.split("-")[1];
-                filters.age = {$gte: fromAge , $lte: toAge};
+                filters.age = { $gte: fromAge, $lte: toAge };
             });
+        }
+
+        if (search) {
+            filters.name = search;
         }
 
         const products = await Product.find(filters).populate('seller').sort({ createdAt: -1 });
 
         res.send({
             success: true,
-            data :products
+            data: products
         })
     } catch (error) {
 
@@ -88,7 +108,7 @@ router.get("/get-product-by-id/:id", authMiddleware, async (req, res) => {
         const product = await Product.findById(req.params.id).populate("seller");
         res.send({
             success: true,
-            data:product,
+            data: product,
         })
 
     } catch (error) {
@@ -162,7 +182,19 @@ router.put("/update-product-status/:id", authMiddleware, async (req, res) => {
     try {
 
         const { status } = req.body;
-        await Product.findByIdAndUpdate(req.params.id, { status });
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, { status });
+
+        //notification to user
+        const newNotification = new Notification({
+            user: updatedProduct.seller,
+            title: `Product Status Updated`,
+            message: `Your product ${updatedProduct.name} has been ${status}`,
+            onClick: `/profile`,
+            read: false
+        })
+        await newNotification.save();
+
+
         res.send({
             success: true,
             message: "Product status updated successfully"

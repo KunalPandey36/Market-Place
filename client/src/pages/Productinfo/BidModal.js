@@ -3,6 +3,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { SetLoader } from '../../redux/loadersSlice';
 import { PlaceNewBid } from '../../apicalls/products';
+import { AddNotification } from '../../apicalls/notifications';
 
 function BidModal( {
     showBidModal,
@@ -31,6 +32,15 @@ function BidModal( {
             dispatch(SetLoader(false));
             if(response.success){
                 message.success("Bid added successfully");
+
+                await AddNotification({
+                    title:"A new bid has been placed",
+                    message:`A new bid has been placed on your product ${product.name} by ${user.name} for Rs ${values.bidAmount}`,
+                    user: product.seller._id,
+                    onClick : `/profile`,
+                    read: false
+                })
+
                 reloadData();
                 setShowBidModal(false);
             }

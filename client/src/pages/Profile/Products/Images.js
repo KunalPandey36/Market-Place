@@ -48,6 +48,7 @@ function Images({selectedProduct,
             if(response.success){
                 message.success(response.message)
                 setImages(updatedImageArray);
+                
                 getData();
             }else{
                 throw new Error(response.message)
@@ -76,6 +77,7 @@ function Images({selectedProduct,
                     setFile(info.file);
                     setShowPreview(true);
                 }}
+            fileList={file ? [file]:[]}
             showUploadList = {showPreview}
             >
             

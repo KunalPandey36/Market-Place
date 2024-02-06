@@ -8,8 +8,8 @@ import { DeleteProduct, GetProducts } from '../../../apicalls/products';
 import moment from "moment";
 
 function Products() {
-    const [showBids,setShowBids] = React.useState(false);
-    
+    const [showBids, setShowBids] = React.useState(false);
+
     const [selectedProduct, setSelectedProduct] = React.useState(null);
     const [products, setProducts] = React.useState([]);
     const [showProductForm, setShowProductForm] = React.useState(false);
@@ -58,8 +58,11 @@ function Products() {
             dataIndex: "name",
         },
         {
-            title: "Description",
-            dataIndex: "description",
+            title: "Product Image",
+            dataIndex: 'image',
+            render: (text, record) => {
+                return <img src={record?.images?.length > 0 ? record.images[0] : ""} alt='' className='w-20 h-20 object-cover rounded-md'></img>
+            }
         },
         {
             title: "Price",
@@ -96,7 +99,7 @@ function Products() {
 
                         setShowProductForm(true);
                     }}></i>
-                    <span className='underline cursor-pointer' onClick={()=>{
+                    <span className='underline cursor-pointer' onClick={() => {
                         setSelectedProduct(record);
                         setShowBids(true);
                     }}>Show Bids</span>
@@ -135,11 +138,11 @@ function Products() {
 
             )}
 
-            { showBids && (
-                <Bids 
-                showBidsModal = {showBids}
-                setShowBidsModal = {setShowBids}
-                selectedProduct = {selectedProduct}
+            {showBids && (
+                <Bids
+                    showBidsModal={showBids}
+                    setShowBidsModal={setShowBids}
+                    selectedProduct={selectedProduct}
                 >
 
                 </Bids>

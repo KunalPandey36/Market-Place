@@ -93,7 +93,7 @@ function Filters({
             <div className='flex flex-col gap-1'>
                 { ages.map((age)=>{
                     return(
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-1'>
                             <input 
                             className='max-width'
                             type='checkbox'

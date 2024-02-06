@@ -15,6 +15,10 @@ const productRoute = require('./routes/productsRoute'); // Products where to rou
 
 const bidsRoute = require('./routes/bidsroute');
 
+const notificationsRoute = require('./routes/notificationsRoute');
+
+app.use('/api/notifications',notificationsRoute);
+
 app.use('/api/bids',bidsRoute)
 
 app.use('/api/products',productRoute);

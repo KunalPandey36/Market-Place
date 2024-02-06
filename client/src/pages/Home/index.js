@@ -1,12 +1,13 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { GetProducts } from '../../apicalls/products'
-import { Input, message } from 'antd'
+import { Button, Input, message } from 'antd'
 import { SetLoader } from '../../redux/loadersSlice'
 import Divider from '../../components/Divider'
 import { useNavigate } from 'react-router-dom'
 import Filters from './Filters'
 import Search from 'antd/es/input/Search'
+import moment from 'moment'
 
 
 
@@ -21,6 +22,12 @@ function Home() {
     age:[],
   }
   )
+  const onSearch = async(values)=>{
+    setFilters({
+      ...filters,
+      search : values
+  })
+  }
   const dispatch = useDispatch();
   const getData = async () => {
     try {
@@ -56,8 +63,7 @@ function Home() {
             <i className="ri-filter-3-line cursor-pointer text-2xl"
               onClick={() => setShowFilters(!showFilters)}></i>
           }
-          <Input type='text' placeholder='Search Product here...' className='border border-gray-300 rounded border-solid w-full p-2 h-14' />
-
+          <Search placeholder="Search Product here..." onSearch={onSearch} enterButton />
         </div>
         <div className={`grid gap-5 ${showFilters ? "grid-cols-4" : "grid-cols-5"}`}>
           {products?.map((product) => {
@@ -71,7 +77,7 @@ function Home() {
 
               <div className='px-2 flex flex-col gap-1'>
                 <h1 className='text-lg font-semibold'>{product.name}</h1>
-                <p className='text-sm text-gray-500'>{product.description}</p>
+                <p className='text-sm text-gray-500'>{moment().subtract(product.age,'years').format("YYYY")} ({product.age} years ago)</p>
                 <Divider />
                 <span className='text-xl font-semibold text-green-700'>
                   Rs {product.price}

@@ -59,8 +59,11 @@ function Products() {
             }
         },
         {
-            title: "Description",
-            dataIndex: "description",
+            title: "Product Image",
+            dataIndex: 'image',
+            render: (text, record) => {
+                return <img src={record?.images?.length > 0 ? record.images[0] : ""} alt='' className='w-20 h-20 object-cover rounded-md'></img>
+            }
         },
         {
             title: "Price",

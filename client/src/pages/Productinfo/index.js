@@ -43,7 +43,7 @@ function Productinfo() {
             <div className='grid grid-cols-2 gap-5 mt-5'>
                 {/*Images*/}
                 <div className='flex flex-col gap-5'>
-                    <img src={product.images[selectedImageIndex]} alt='' className='w-full h-86 rounded-md object-cover' />
+                    <img src={product.images[selectedImageIndex]} alt='' className='w-full h-84 rounded-md object-cover p-20' />
                     <div className='flex gap-5'>
                         {product.images.map((image, index) => {
                             return (
@@ -126,9 +126,9 @@ function Productinfo() {
                             </Button>
                         </div>
                         { product.showBidsOnProductPage &&
-                            product.bids.map((bid) => {
+                            product?.bids?.map((bid) => {
                             return (
-                                <div className='border border-gray-400 border-solid p-3 rounded'>
+                                <div className='border border-gray-400 border-solid p-3 rounded mt-5'>
                                     <div className='flex justify-between'>
                                         <span>Name</span>
                                         <span>{bid.buyer.name}</span>
